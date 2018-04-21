@@ -1,0 +1,61 @@
+package cs3500.animator.view;
+
+import cs3500.animator.model.IAnimationModel;
+import cs3500.animator.model.IAnimationModelReadOnly;
+import cs3500.animator.model.animation.IAnimation;
+import cs3500.animator.model.shape.IAnimShape;
+
+/**
+ * Creates animation views.
+ */
+public class AnimationViewCreator {
+  private int rate;
+  private IAnimationModelReadOnly<IAnimShape, IAnimation> model;
+
+  /**
+   * Create a constructor  take in a model and tempo.
+   *
+   * @param model the AnimationModel.
+   * @param rate  the tempo(it means how many seconds in one tick).
+   */
+  public AnimationViewCreator(IAnimationModel<IAnimShape, IAnimation> model, int rate) {
+    if (rate <= 0) {
+      throw new IllegalArgumentException("Rate must be a positive integer.");
+    }
+    this.rate = rate;
+    this.model = model;
+  }
+
+  /**
+   * Create a constructor only take in a model.
+   *
+   * @param model the AnimationModel.
+   */
+  public AnimationViewCreator(IAnimationModelReadOnly<IAnimShape, IAnimation> model) {
+    this.rate = 1;
+    this.model = model;
+  }
+
+  /**
+   * A string animation views creator. When the string is text, output the text animation view. When
+   * the string is svg, output the svg animation view. When the string is visual, output the visual
+   * animation view.
+   *
+   * @param name the key words to create different animation view.
+   * @return string animation view.
+   */
+  public IAnimationView create(String name) {
+    switch (name) {
+      case "text":
+        return new TextAnimationView(model, rate);
+      case "svg":
+        return new SvgAnimationView(model, rate);
+      case "visual":
+        return new VisualAnimationView(model, rate);
+      case "interactive":
+        return new InteractiveView(model, rate, new SvgAnimationView(model, rate));
+      default:
+        throw new IllegalArgumentException("Invalid name of view");
+    }
+  }
+}
